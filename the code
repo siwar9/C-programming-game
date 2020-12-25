@@ -1,0 +1,130 @@
+/*Fonctions principales de gestion du jeu
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+char lireCaractere()
+{
+    char caractere = 0;
+
+    caractere = getchar(); // On lit le premier caractère
+
+    // On lit les autres caractères mémorisés un à un jusqu'au \n
+    while (getchar() != '\n') ;
+
+    return caractere; // On retourne le premier caractère qu'on a lu
+}
+
+int gagne(int lettretrouvee[], int taillemot)
+{
+    int i = 0;
+    int gagnant = 1;
+
+    for (i = 0 ; i <= taillemot-1 ; i++)
+    {
+        if (lettretrouvee[i] == 0)
+            gagnant = 0;
+    }
+
+    return gagnant;
+}
+
+int recherchelettre(char lettre, char mot[], int lettretrouvee[])
+{
+    int i = 0;
+    int bonnelettre = 0;
+
+    // On parcourt mot cherché pour vérifier si la lettre proposée est vrai ou non
+    for (i = 0 ; mot[i] != '\0' ; i++)
+    {
+        if (lettre == mot[i]) // Si la lettre est vrai
+        {
+            bonnelettre = 1; // On mémorise que c'était une bonne lettre
+            lettretrouvee[i] = 1; // On met à 1 la case du tableau de booléens correspondant à la lettre actuelle
+        }
+    }
+
+    return bonnelettre;
+}
+
+
+int main()
+{
+    char caractere;
+    char lettre; // Stocke la lettre proposée par l'utilisateur (retour du scanf)
+    int *lettretrouvee = NULL; // Un tableau de booléens. Chaque case correspond à une lettre du mot secret. 0 = lettre non trouvée, 1 = lettre trouvée
+    int nbressai = 3; // Compteur de coups restants (0 = mort)
+    int i,k,m= 0; // Une petite variable pour parcourir les tableaux
+    int taillemot = 0;
+    char mot[10][20]={"AMIRA", "SIWAR", "PROJET",
+                     "PROGRAMMATION", "HACK", "ENETCOM",
+                     "TELECOM","PREPA","CLUB","BUVETTE"};
+
+
+
+
+
+    printf("********** BIENVENU DANS LE JEU MOTS SECRETS !**********\n\n");
+
+for (i = 0 ; i<= 9 ; i++) {
+
+        taillemot = strlen(mot[i]);
+
+        lettretrouvee = malloc(taillemot * sizeof(int)); // On alloue dynamiquement le tableau lettreTrouvee (dont on ne connaissait pas la taille au départ)
+        if (lettretrouvee == NULL)
+                exit(0);
+
+        for (k = 0 ; k<= taillemot-1 ; k++)
+                lettretrouvee[k] = 0;
+
+          /* On continue à jouer tant qu'il reste au moins un coup à jouer ou qu'on
+         n'a pas gagné */
+        while (nbressai>0 && nbressai<=3 && !gagne(lettretrouvee, taillemot)) {
+
+                printf("Vous avez %d mots a trouver", 10-i);
+                printf("\n\nIl vous reste %d coups a jouer pour mot %d ", nbressai, 1+i);
+
+
+                /* On affiche le mot secret en masquant les lettres non trouvées */
+
+                for (m = 0 ; m <= taillemot-1 ; m++) {
+
+                    if (lettretrouvee[m]) // Si on a trouvé la lettre n° i
+                        printf("%c", mot[m]); // On l'affiche
+
+
+                    else
+                        printf("*"); // Sinon, on affiche une étoile pour les lettres non trouvées
+
+                    }
+                if (recherchelettre(lettre, mot, lettretrouvee))
+                        printf("\n\nBien Joue!");
+                else
+                        printf("\n\nERREUR");
+
+
+                printf("\nProposez une lettre : ");
+                lettre = lireCaractere();
+
+        // Si ce n'était PAS la bonne lettre
+        if (!recherchelettre(lettre, mot, lettretrouvee)) {
+
+        nbressai--;        // On enlève un coup au joueur
+               }
+       }
+
+     if (gagne(lettretrouvee, taillemot))
+                printf("\n\nBien Joue!");
+    else
+                printf("\n\nErreur");
+
+    free(lettretrouvee); // On libère la mémoire allouée manuellement (par malloc)
+
+    return 0;
+}
+}
+
+
+
